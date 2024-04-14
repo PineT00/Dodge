@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Spawner : MonoBehaviour
@@ -23,7 +25,8 @@ public class Spawner : MonoBehaviour
 
     private void Update()
     {
-        if(Time.time > nextSpawnTime)
+
+        if (Time.time > nextSpawnTime)
         {
             CreateBullet();
             nextSpawnTime = Time.time + Random.Range(minInterval, maxInterval);
@@ -32,6 +35,7 @@ public class Spawner : MonoBehaviour
 
     private void CreateBullet()
     {
+        Debug.Log("dddddddddddddddd");
         var direction = player.transform.position - transform.position;
         direction.Normalize();
         var targetRotation = Quaternion.LookRotation(direction);

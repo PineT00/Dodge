@@ -8,9 +8,11 @@ public class PlayerController : MonoBehaviour
 
     public float speed = 10f;
     public float rSpeed = 100f;
+    public float gravity = 1f;
     public Rigidbody rb;
 
     public bool isInvincible = false;
+    private float invinsibleTime = 5f;
 
     Vector3 dir;
 
@@ -23,41 +25,42 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         gameManager = GameObject.FindWithTag("GameController").GetComponent<GameManager>();
-        dir = new Vector3(0f, -9.8f * Time.deltaTime, 0f);
+        dir = new Vector3(0f, -gravity * Time.deltaTime, 0f);
     }
 
     void FixedUpdate()
     {
+
         float h = Input.GetAxis("Horizontal");
         float v = Input.GetAxis("Vertical");
 
         dir.x = h;
         dir.z = v;
-
-
+        dir.y = -gravity * Time.deltaTime;
 
         if (dir.magnitude > 1f)
         {
             dir.Normalize();
         }
 
-        if (Input.GetKey(KeyCode.Space))
+        if(isInvincible)
         {
-            dir.y += 10f * Time.deltaTime;
-            rSpeed = 400f;
-            isInvincible = true;
-            rb.velocity = dir * speed;
+            rSpeed = 800f;
+            invinsibleTime -= Time.deltaTime;
         }
         else
         {
-            isInvincible = false;
-            dir.y = -30f * Time.deltaTime;
-            rb.velocity = dir * speed;
-            rSpeed = 1f;
+            rSpeed = 0f;
         }
-        rb.rotation = Quaternion.Euler(0f, rSpeed * Time.deltaTime, 0f);
+        if(invinsibleTime <= 0f)
+        {
+            isInvincible = false;
+            invinsibleTime = 3f;
+        }
 
-
+        transform.Rotate(0f, rSpeed * Time.deltaTime, 0f);
+        //rb.rotation = Quaternion.Euler(0f, rSpeed , 0f);
+        rb.velocity = dir * speed;
     }
 
     public void OnDie()
@@ -65,5 +68,21 @@ public class PlayerController : MonoBehaviour
         gameObject.SetActive(false);
         gameManager.EndGame();
     }
+
+
+    //private void OnCollisionStay(Collision collision)
+    //{
+    //    if(GameObject.FindGameObjectWithTag("Platform"))
+    //    {
+    //        gravity = 1f;
+    //    }
+    //}
+    //private void OnCollisionExit(Collision collision)
+    //{
+    //    if (GameObject.FindGameObjectWithTag("Platform"))
+    //    {
+    //        gravity = 9.8f;
+    //    }
+    //}
 
 }
